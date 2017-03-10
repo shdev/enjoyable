@@ -26,7 +26,7 @@
     NJOutputMouseMove *output = [[NJOutputMouseMove alloc] init];
     output.axis = [serialization[@"axis"] intValue];
     output.speed = [serialization[@"speed"] floatValue];
-    if (!output.speed)
+    if (0 == output.speed)
         output.speed = 10;
     return output;
 }

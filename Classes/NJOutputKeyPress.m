@@ -29,17 +29,38 @@
 
 - (void)trigger {
     if (_keyCode != NJKeyInputFieldEmpty) {
-        CGEventRef keyDown = CGEventCreateKeyboardEvent(NULL, _keyCode, YES);
+        CGEventSourceRef src =
+        CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
+        
+        CGEventRef cmdd = CGEventCreateKeyboardEvent(src, 0x38, true);
+        CGEventRef keyDown = CGEventCreateKeyboardEvent(src, _keyCode, YES);
+        CGEventSetFlags(keyDown, kCGEventFlagMaskCommand);
+        
+        CGEventPost(kCGHIDEventTap, cmdd);
         CGEventPost(kCGHIDEventTap, keyDown);
+        
         CFRelease(keyDown);
+        CFRelease(cmdd);
+        CFRelease(src);
+
     }
 }
 
 - (void)untrigger {
     if (_keyCode != NJKeyInputFieldEmpty) {
-        CGEventRef keyUp = CGEventCreateKeyboardEvent(NULL, _keyCode, NO);
+        
+        CGEventSourceRef src =
+        CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
+        
+        CGEventRef keyUp = CGEventCreateKeyboardEvent(src, _keyCode, NO);
+        CGEventRef cmdu = CGEventCreateKeyboardEvent(src, 0x38, false);
+        CGEventSetFlags(keyUp, kCGEventFlagMaskCommand);
         CGEventPost(kCGHIDEventTap, keyUp);
+        CGEventPost(kCGHIDEventTap, cmdu);
         CFRelease(keyUp);
+        CFRelease(cmdu);
+        CFRelease(src);
+
     }
 }
 
